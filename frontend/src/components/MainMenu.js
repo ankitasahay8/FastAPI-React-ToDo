@@ -13,9 +13,13 @@ const MainMenu = () => {
   useEffect(() => {
     const readTasks = async () => {
       try {
-        const response = await fetch("items/");
-        if (!response.ok) throw Error("Did not receive expected data");
+        const response = await fetch("http://127.0.0.1:4000/items/");
+
+        if (!response.ok)
+          throw Error("Did not receive expected data");
+
         const fetchTasks = await response.json();
+
         setTasks(fetchTasks);
         setFetchError(null);
       } catch (err) {
@@ -38,9 +42,13 @@ const MainMenu = () => {
           }
         : task
     );
+
     setTasks(listItems);
 
-    const myItem = listItems.filter((item) => item.id == newTaskUpdate.id);
+    const myItem = listItems.filter(
+      (item) => item.id == newTaskUpdate.id
+    );
+
     const updateOptions = {
       method: "PUT",
       headers: {
@@ -51,24 +59,39 @@ const MainMenu = () => {
         content: myItem[0].content,
       }),
     };
-    const result = await apiRequest(`items/${newTaskUpdate.id}`, updateOptions);
+
+    const result = await apiRequest(
+      `items/${newTaskUpdate.id}`,
+      updateOptions
+    );
+
     if (result) setFetchError(result);
   };
 
   const handleUpdateActive = (e) => {
     updateTask(e);
-  }
+  };
 
   const handleUpdateContent = (e) => {
     e.preventDefault();
+
     if (!newTaskUpdate) return;
+
     updateTask(newTaskUpdate);
     setNewTaskUpdate("");
   };
 
   const createTask = async (content) => {
-    const new_id = tasks.length ? tasks[tasks.length - 1].id + 1 : 1;
-    const addTask = { id: new_id, is_active: true, content: content };
+    const new_id = tasks.length
+      ? tasks[tasks.length - 1].id + 1
+      : 1;
+
+    const addTask = {
+      id: new_id,
+      is_active: true,
+      content: content,
+    };
+
     const newTasks = [...tasks, addTask];
     setTasks(newTasks);
 
@@ -79,24 +102,42 @@ const MainMenu = () => {
       },
       body: JSON.stringify(addTask),
     };
-    const result = await apiRequest(`users/1/items`, postOptions);
+
+    const result = await apiRequest(
+      `users/1/items`,
+      postOptions
+    );
+
     if (result) setFetchError(result);
   };
 
   const handleCreate = (e) => {
     e.preventDefault();
+
     if (!newTaskCreate) return;
+
     createTask(newTaskCreate);
     setNewTaskCreate("");
   };
 
   const deleteTask = async (item_id) => {
-    const NewList = tasks.filter((listTask) => listTask.id !== item_id);
+    const NewList = tasks.filter(
+      (listTask) => listTask.id !== item_id
+    );
+
     setTasks(NewList);
 
-    const deleteOptions = { method: "DELETE" };
+    const deleteOptions = {
+      method: "DELETE",
+    };
+
     const reqUrl = `items/${item_id}`;
-    const result = await apiRequest(reqUrl, deleteOptions);
+
+    const result = await apiRequest(
+      reqUrl,
+      deleteOptions
+    );
+
     if (result) setFetchError(result);
   };
 
@@ -106,9 +147,10 @@ const MainMenu = () => {
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl px-4 md:px-6 py-2.5">
           <a className="flex items-center">
             <span className="self-center text-xl font-semibold whitespace-nowrap">
-              FastAPI&React ToDo!
+              FastAPI & React ToDo!
             </span>
           </a>
+
           <div className="flex items-center">
             <a
               href="#"
@@ -119,6 +161,7 @@ const MainMenu = () => {
           </div>
         </div>
       </nav>
+
       <nav className="border-b-4 border-black">
         <div className="max-w-screen-xl px-4 py-3 mx-auto md:px-6">
           <div className="flex items-center">
@@ -132,15 +175,18 @@ const MainMenu = () => {
                   Home
                 </a>
               </li>
+
               <li>
                 <a
-                  href="localhost:4000/redoc/"
+                  href="http://127.0.0.1:4000/redoc"
                   target="_blank"
+                  rel="noreferrer"
                   className="text-gray-900"
                 >
                   API
                 </a>
               </li>
+
               <li>
                 <a
                   href="#"
@@ -149,6 +195,7 @@ const MainMenu = () => {
                   Done
                 </a>
               </li>
+
               <li>
                 <a
                   href="#"
@@ -161,23 +208,33 @@ const MainMenu = () => {
           </div>
         </div>
       </nav>
+
       <nav className="sticky top-0 bg-pink-500">
         <div className="p-4 bg-pink-500">
-        <div className="w-1/2 p-2 mx-auto md:px-6 bg-white">
+          <div className="w-1/2 p-2 mx-auto md:px-6 bg-white">
             <TaskForm
               className="w-50 p-10 content-center"
               newTaskCreate={newTaskCreate}
               setNewTaskCreate={setNewTaskCreate}
               handleCreate={handleCreate}
-            ></TaskForm>
-        </div>
+            />
+          </div>
         </div>
       </nav>
+
       <main>
-        {isLoading && <p className={ "animate-pulse text-pink-500 p-40 text-center" }>Loading Items...</p>}
-        {fetchError && (
-          <p className={ "animate-pulse text-pink-500 p-40 text-center" }>{`Error: ${fetchError}`}</p>
+        {isLoading && (
+          <p className="animate-pulse text-pink-500 p-40 text-center">
+            Loading Items...
+          </p>
         )}
+
+        {fetchError && (
+          <p className="animate-pulse text-pink-500 p-40 text-center">
+            Error: {fetchError}
+          </p>
+        )}
+
         {!fetchError && !isLoading && (
           <TaskItem
             tasks={tasks}
@@ -186,7 +243,7 @@ const MainMenu = () => {
             handleUpdateActive={handleUpdateActive}
             handleUpdateContent={handleUpdateContent}
             setNewTaskUpdate={setNewTaskUpdate}
-          ></TaskItem>
+          />
         )}
       </main>
     </div>
